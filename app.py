@@ -6,28 +6,37 @@ from xml.etree import ElementTree
 # 발급받은 인증키를 여기에 입력
 MY_API_KEY = "9870f159be582ffac2fa2479eaf7819d2ad3fd7771722c1a091456e62a4de87f"
 
-def get_data(loc, date):
+    def get_data(loc, date):
     url = "http://apis.data.go.kr/B090041/openapi/service/RiseSetInfoService/getAreaRiseSetInfo"
-    params = {'serviceKey': '9870f159be582ffac2fa2479eaf7819d2ad3fd7771722c1a091456e62a4de87f', 'locdate': date, 'location': loc}
+    params = {'serviceKey': MY_API_KEY, 'locdate': date, 'location': loc}
+    
     try:
+        # 1. 데이터를 가져옵니다.
         response = requests.get(url, params=params)
         root = ElementTree.fromstring(response.text)
         item = root.find(".//item")
-if item is not None:
-            # 1. 일단 데이터를 가져옵니다 (예: "1925")
-            sr = item.findtext("sunrise")
-            ss = item.findtext("sunset")
+        
+        # 2. 아이템이 있을 때만 가공합니다.
+        if item is not None:
+            sr = item.findtext("sunrise") # 예: 0524
+            ss = item.findtext("sunset")  # 예: 1925
             mr = item.findtext("moonrise")
             ms = item.findtext("moonset")
 
-            # 2. 글자를 쪼개서 합친 뒤 밖으로 내보냅니다 (예: "19:25")
+            # 글자 자르기 (1925 -> 19:25) 적용
             return {
                 "일출": sr[:2] + ":" + sr[2:] if sr else "정보없음",
                 "일몰": ss[:2] + ":" + ss[2:] if ss else "정보없음",
-                "월출": (mr[:2] + ":" + mr[2:]) if (mr and len(mr)==4) else "정보없음",
-                "월몰": (ms[:2] + ":" + ms[2:]) if (ms and len(ms)==4) else "정보없음"
+                "월출": mr[:2] + ":" + mr[2:] if (mr and len(mr)==4) else "정보없음",
+                "월몰": ms[:2] + ":" + ms[2:] if (ms and len(ms)==4) else "정보없음"
             }
-    except: return None
+            
+    except Exception as e:
+        # 여기가 바로 컴퓨터가 찾던 'except' 블록입니다! 에러 발생 시 처리 부분이죠.
+        print(f"에러 발생: {e}")
+        return None
+        
+    return None # 아이템이 없을 때의 결과
 
 st.title("☀️ 해와 달 출몰시간 대시보드")
 with st.sidebar:
