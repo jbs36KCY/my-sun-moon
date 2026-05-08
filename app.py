@@ -8,7 +8,7 @@ MY_API_KEY = "9870f159be582ffac2fa2479eaf7819d2ad3fd7771722c1a091456e62a4de87f"
 
 def get_data(loc, date):
     url = "http://apis.data.go.kr/B090041/openapi/service/RiseSetInfoService/getAreaRiseSetInfo"
-    params = {'serviceKey': 9870f159be582ffac2fa2479eaf7819d2ad3fd7771722c1a091456e62a4de87f, 'locdate': date, 'location': loc}
+    params = {'serviceKey': '9870f159be582ffac2fa2479eaf7819d2ad3fd7771722c1a091456e62a4de87f', 'locdate': date, 'location': loc}
     try:
         response = requests.get(url, params=params)
         root = ElementTree.fromstring(response.text)
