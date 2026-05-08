@@ -13,11 +13,19 @@ def get_data(loc, date):
         response = requests.get(url, params=params)
         root = ElementTree.fromstring(response.text)
         item = root.find(".//item")
-        if item is not None:
+if item is not None:
+            # 1. 일단 데이터를 가져옵니다 (예: "1925")
+            sr = item.findtext("sunrise")
+            ss = item.findtext("sunset")
+            mr = item.findtext("moonrise")
+            ms = item.findtext("moonset")
+
+            # 2. 글자를 쪼개서 합친 뒤 밖으로 내보냅니다 (예: "19:25")
             return {
-                "일출": item.findtext("sunrise"), "일몰": item.findtext("sunset"),
-                "월출": item.findtext("moonrise"), "월몰": item.findtext("moonset"),
-                "지역": item.findtext("location"), "날짜": item.findtext("locdate")
+                "일출": sr[:2] + ":" + sr[2:] if sr else "정보없음",
+                "일몰": ss[:2] + ":" + ss[2:] if ss else "정보없음",
+                "월출": (mr[:2] + ":" + mr[2:]) if (mr and len(mr)==4) else "정보없음",
+                "월몰": (ms[:2] + ":" + ms[2:]) if (ms and len(ms)==4) else "정보없음"
             }
     except: return None
 
